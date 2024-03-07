@@ -104,35 +104,53 @@ def output(N, P, K, temperature, humidity, ph, rainfall):
 st.write("The mean values of input variables are provided in the above table. Refer the above table to set the input variables and see the accuracy of the recommendation!")
 
 with st.sidebar:
-    image = Image.open('./sidebar_image.jpg')
-    st.image(image)
-    st.markdown("<h2 style='text-align: center; color: red;'>Settings Tab</h2>", unsafe_allow_html=True)
-
+  
+     
+    st.markdown("<h2 style='text-align: center; color: green;'>Settings Tab</h2>", unsafe_allow_html=True)
 
     st.write("Input Settings:")
+    
+    # Define input widgets for location, soil type, and climate
+    location = st.text_input("Location", "")
+    soil_type = st.selectbox("Soil Type", ["Sandy", "Loamy", "Clay", "Silt", "Peat"])
+    climate = st.selectbox("Climate", ["Warm and Dry", "Hot and Humid", "Cool and Dry", "Mild and Humid"])
 
-    #define the N for the model
+    # Define the N for the model
     n_value = st.slider('Nitrogen :', 0.0, 150.0, 20.0)
 
-    #define the P for the model
+    # Define the P for the model
     p_value = st.slider('Phosphorus :', 0.0, 150.0, 20.0)
 
-    #define the K for the model
-    k_value = st.slider('pottasium  :', 0.0, 200.0, 40.0)
+    # Define the K for the model
+    k_value = st.slider('Potassium :', 0.0, 200.0, 40.0)
 
-    #define the temperature for the model
+    # Define the temperature for the model
     temperature = st.slider('Temperature :', 0.0, 50.0, 10.0)
 
-    #define the humidity for the model
+    # Define the humidity for the model
     humidity = st.slider('Humidity  :', 0.0, 100.0, 40.0)
 
-    #define the ph for the model
+    # Define the pH for the model
     ph_value = st.slider('pH  :', 0.0, 10.0, 2.0)
 
-    #define the rainfall for the model
+    # Define the rainfall for the model
     rainfall = st.slider('Rainfall  :', 10.0, 300.0, 40.0)
+
+
+def output(N, P, K, temperature, humidity, ph, rainfall, location, soil_type, climate):
+    predict = recommend(N, P, K, temperature, humidity, ph, rainfall)
+    if predict in check_crops:
+        crop = check_crops[predict]
+        st.write("""# Our crop recommendation is """, crop)
+        with st.spinner('Getting best crop advice...'):
+            autocompletion = generate_autocompletion(crop + f" in {location}, {soil_type} soil, {climate} climate")
+    else:
+        st.write("""# No recommendation""")
+
+
+
 
 
 with st.container():
     if st.button("Recommend"):
-        output(n_value, p_value, k_value, temperature, humidity, ph_value, rainfall)
+        output(n_value, p_value, k_value, temperature, humidity, ph_value, rainfall, location, soil_type, climate)
